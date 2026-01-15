@@ -5,13 +5,21 @@ This agent uses the Tavily Python SDK for advanced research capabilities
 including web search, deep research, content extraction, site mapping, and crawling.
 """
 
+# Load environment variables from .env file BEFORE other imports
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env from the lp_brief directory
+env_path = Path(__file__).parent / ".env"
+load_dotenv(env_path)
+
 from google.adk.agents import LlmAgent
 from google.adk.planners import BuiltInPlanner
-from google.adk.tools.agent_tool import AgentTool
 from google.genai import types
 
 from lp_brief import agent_instructions
 from lp_brief.tavily_toolbox import TAVILY_TOOLS
+from lp_brief.pdf_formatter import format_brief_to_pdf
 
 # Enable thinking/reasoning for deeper analysis
 thinking_planner = BuiltInPlanner(
@@ -20,30 +28,13 @@ thinking_planner = BuiltInPlanner(
     )
 )
 
-# Research Agent - Uses Tavily tools for comprehensive intelligence gathering
-research_agent = LlmAgent(
-    name="research_agent",
-    model="gemini-3-pro-preview",
-    instruction=agent_instructions.RESEARCH_AGENT_INSTRUCTION,
-    tools=TAVILY_TOOLS,
-    description=(
-        "Research agent that gathers comprehensive intelligence about VC funds "
-        "using advanced web search, deep research, content extraction, and site crawling."
-    ),
-    planner=thinking_planner,
-)
-
-
-# Wrap research agent as a tool for the orchestrator
-research_tool = AgentTool(agent=research_agent)
-
-
-# Root Orchestrator Agent - Synthesizes research into LP-specific briefings
+# Single LP Briefing Agent - handles both research and synthesis
+# Tavily tools for research + PDF formatter for output
 root_agent = LlmAgent(
-    name="lp_briefing_orchestrator",
+    name="lp_briefing_agent",
     model="gemini-3-pro-preview",
-    instruction=agent_instructions.ORCHESTRATOR_AGENT_INSTRUCTION,
-    tools=[research_tool],
-    description="Portfolio manager that synthesizes research into LP-specific briefings",
+    instruction=agent_instructions.LP_BRIEFING_AGENT_INSTRUCTION,
+    tools=TAVILY_TOOLS + [format_brief_to_pdf],
+    description="LP briefing agent that researches VC funds and synthesizes findings into branded PDF reports",
     planner=thinking_planner,
 )

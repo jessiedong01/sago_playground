@@ -11,6 +11,15 @@ import asyncio
 from typing import Optional
 from dataclasses import dataclass
 
+# #region agent log
+def _debug_print(tag: str, msg: str, data: dict = None):
+    import sys
+    print(f"\n[DEBUG {tag}] {msg}", file=sys.stderr, flush=True)
+    if data:
+        for k, v in data.items():
+            print(f"  {k}: {str(v)[:200]}", file=sys.stderr, flush=True)
+# #endregion
+
 from tavily import (
     AsyncTavilyClient,
     BadRequestError,
@@ -55,6 +64,9 @@ class TavilyToolbox:
             ValueError: If no API key is provided or found in environment.
         """
         self._api_key = api_key or os.getenv("TAVILY_API_KEY")
+        # #region agent log
+        _debug_print("INIT", "API key check", {"api_key_present": bool(self._api_key), "api_key_length": len(self._api_key) if self._api_key else 0})
+        # #endregion
         if not self._api_key:
             raise ValueError(
                 "Tavily API key required. Set TAVILY_API_KEY environment variable "
@@ -89,6 +101,9 @@ class TavilyToolbox:
         Returns:
             TavilyResult with markdown-formatted search results.
         """
+        # #region agent log
+        _debug_print("WEB_SEARCH", f"Called with query: {query[:80]}...")
+        # #endregion
         try:
             response = await self._client.search(
                 query=query,
@@ -99,14 +114,26 @@ class TavilyToolbox:
                 include_answer=True,
                 include_raw_content=False,
             )
+            # #region agent log
+            _debug_print("WEB_SEARCH", "Got API response", {"response_keys": list(response.keys()) if isinstance(response, dict) else "not_dict", "num_results": len(response.get("results", []))})
+            # #endregion
             
             # Format results as clean markdown for LLM consumption
             markdown = self._format_search_results(query, response)
+            # #region agent log
+            _debug_print("WEB_SEARCH", f"Formatted markdown length: {len(markdown)}")
+            # #endregion
             return TavilyResult(success=True, data=markdown)
             
         except (BadRequestError, InvalidAPIKeyError, UsageLimitExceededError) as e:
+            # #region agent log
+            _debug_print("WEB_SEARCH", f"API ERROR: {type(e).__name__}: {e}")
+            # #endregion
             return self._handle_error("web_search", e)
         except Exception as e:
+            # #region agent log
+            _debug_print("WEB_SEARCH", f"UNEXPECTED ERROR: {type(e).__name__}: {e}")
+            # #endregion
             return TavilyResult(
                 success=False,
                 data="",
@@ -141,6 +168,9 @@ class TavilyToolbox:
         Returns:
             TavilyResult with a comprehensive research report in markdown.
         """
+        # #region agent log
+        _debug_print("DEEP_RESEARCH", f"Called with query: {query[:80]}...")
+        # #endregion
         try:
             response = await self._client.research(
                 query=query,
@@ -148,14 +178,26 @@ class TavilyToolbox:
                 max_depth=max_depth,
                 max_breadth=max_breadth,
             )
+            # #region agent log
+            _debug_print("DEEP_RESEARCH", "Got API response", {"response_keys": list(response.keys()) if isinstance(response, dict) else "not_dict"})
+            # #endregion
             
             # The research endpoint returns a structured report
             markdown = self._format_research_report(query, response)
+            # #region agent log
+            _debug_print("DEEP_RESEARCH", f"Formatted markdown length: {len(markdown)}")
+            # #endregion
             return TavilyResult(success=True, data=markdown)
             
         except (BadRequestError, InvalidAPIKeyError, UsageLimitExceededError) as e:
+            # #region agent log
+            _debug_print("DEEP_RESEARCH", f"API ERROR: {type(e).__name__}: {e}")
+            # #endregion
             return self._handle_error("deep_research", e)
         except Exception as e:
+            # #region agent log
+            _debug_print("DEEP_RESEARCH", f"UNEXPECTED ERROR: {type(e).__name__}: {e}")
+            # #endregion
             return TavilyResult(
                 success=False,
                 data="",
@@ -566,8 +608,16 @@ async def tavily_web_search(
     Returns:
         Markdown-formatted search results with sources.
     """
+    # #region agent log
+    _debug_print("TOOL_WEB_SEARCH", f">>> ENTRY: {query[:60]}...")
+    # #endregion
     toolbox = _get_toolbox()
     result = await toolbox.web_search(query, depth, max_results)
+    # #region agent log
+    _debug_print("TOOL_WEB_SEARCH", f"<<< EXIT: success={result.success}, data_len={len(result.data)}, error={result.error}")
+    if result.data:
+        _debug_print("TOOL_WEB_SEARCH", f"    PREVIEW: {result.data[:150]}...")
+    # #endregion
     if result.success:
         return result.data
     return f"**Search Error:** {result.error}"
@@ -591,8 +641,16 @@ async def tavily_deep_research(query: str) -> str:
     Returns:
         A comprehensive research report in markdown format.
     """
+    # #region agent log
+    _debug_print("TOOL_DEEP_RESEARCH", f">>> ENTRY: {query[:60]}...")
+    # #endregion
     toolbox = _get_toolbox()
     result = await toolbox.deep_research(query)
+    # #region agent log
+    _debug_print("TOOL_DEEP_RESEARCH", f"<<< EXIT: success={result.success}, data_len={len(result.data)}, error={result.error}")
+    if result.data:
+        _debug_print("TOOL_DEEP_RESEARCH", f"    PREVIEW: {result.data[:150]}...")
+    # #endregion
     if result.success:
         return result.data
     return f"**Research Error:** {result.error}"

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600&display=swap');
+
+        /* Page setup */
+        @page {
+            size: letter;
+            margin: 72pt;
+            @bottom-center {
+                content: "Confidential | Prepared by Sago | Powered by Sentinel Labs";
+                font-family: 'Arial', sans-serif;
+                font-size: 9pt;
+                color: #2b5845;
+            }
+            @bottom-right {
+                content: "Page " counter(page);
+                font-family: 'Arial', sans-serif;
+                font-size: 9pt;
+            }
+        }
+
+        /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            font-size: 12pt;
+            color: #1f1f1f;
+            line-height: 1.15;
+            max-width: 468pt;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* Header image */
+        .header-image {
+            width: 100%;
+            margin-bottom: 24pt;
+        }
+
+        .header-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Title block */
+        .title-block {
+            margin-bottom: 24pt;
+        }
+
+        .memo-type {
+            font-size: 20pt;
+            color: #2b5845;
+            font-weight: 400;
+            margin: 0 0 8pt 0;
+        }
+
+        .fund-name {
+            font-size: 32pt;
+            color: #2b5845;
+            font-weight: 400;
+            margin: 0 0 16pt 0;
+        }
+
+        .metadata {
+            text-align: right;
+            font-size: 12pt;
+            color: #1f1f1f;
+        }
+
+        .metadata p {
+            margin: 0;
+        }
+
+        /* Section headers - tan background with green text */
+        .section-header {
+            background-color: #f6efd8;
+            border: 1pt solid #000000;
+            padding: 5pt;
+            margin: 24pt 0 12pt 0;
+        }
+
+        .section-header h2 {
+            font-size: 20pt;
+            color: #2b5845;
+            font-weight: 400;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Subsection headers */
+        h3 {
+            font-size: 16pt;
+            color: #2b5845;
+            font-weight: 400;
+            margin: 16pt 0 8pt 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        h4 {
+            font-size: 14pt;
+            color: #1f1f1f;
+            font-weight: 600;
+            margin: 12pt 0 6pt 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Body text */
+        p {
+            margin: 0 0 10pt 0;
+            font-family: 'IBM Plex Sans', 'Inter', sans-serif;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 0 0 10pt 0;
+            padding-left: 36pt;
+        }
+
+        li {
+            margin-bottom: 4pt;
+            font-family: 'IBM Plex Sans', 'Inter', sans-serif;
+        }
+
+        /* Table styling - critical for wide tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            font-size: 11pt;
+            margin: 12pt 0;
+        }
+
+        th, td {
+            border: 1pt solid #1f1f1f;
+            padding: 8pt 10pt;
+            text-align: left;
+            vertical-align: top;
+            word-break: normal;
+            overflow-wrap: anywhere;
+            hyphens: none;
+            -webkit-hyphens: none;
+        }
+
+        th {
+            background-color: #f6efd8;
+            color: #2b5845;
+            font-weight: 600;
+        }
+
+        /* Two-column info tables */
+        .info-table {
+            width: 100%;
+        }
+
+        .info-table td:first-child {
+            width: 35%;
+            font-weight: 400;
+        }
+
+        .info-table td:last-child {
+            width: 65%;
+        }
+
+        /* Flag styling */
+        .red-flag {
+            color: #cc0000;
+            font-weight: 600;
+        }
+
+        .yellow-flag {
+            color: #b7a200;
+            font-weight: 600;
+        }
+
+        .flag-item {
+            margin-bottom: 8pt;
+        }
+
+        .flag-item strong {
+            font-weight: 700;
+        }
+
+        /* Links */
+        a {
+            color: #1155cc;
+            text-decoration: underline;
+        }
+
+        /* Horizontal rule */
+        hr {
+            border: none;
+            border-top: 1pt solid #1f1f1f;
+            margin: 24pt 0;
+        }
+
+        /* Code/highlight blocks */
+        code {
+            background-color: #e8eaed;
+            padding: 2pt 4pt;
+            font-family: monospace;
+            font-size: 10pt;
+        }
+
+        /* Print/PDF specific styles */
+        @media print {
+            table {
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            .section-header {
+                page-break-after: avoid;
+            }
+            h2, h3, h4 {
+                page-break-after: avoid;
+            }
+        }
+
+        /* Confidence levels */
+        .confidence-high {
+            color: #2b5845;
+            font-weight: 600;
+        }
+
+        .confidence-medium {
+            color: #b7a200;
+            font-weight: 600;
+        }
+
+        .confidence-low {
+            color: #cc0000;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Sago logo -->
+    <div class="header-image">
+        <img src="{{ logo_path }}" alt="Sago">
+    </div>
+
+    <!-- Title block -->
+    <div class="title-block">
+        <h1 class="fund-name">Brief: {{ fund_name }}</h1>
+        <div class="metadata">
+            <p>Prepared for: {{ prepared_for }}</p>
+            <p>Date: {{ date }}</p>
+        </div>
+    </div>
+
+    <!-- Main content from markdown conversion -->
+    {{ content | safe }}
+</body>
+</html>

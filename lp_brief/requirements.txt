@@ -1,3 +1,6 @@
+# Environment variable management
+python-dotenv>=1.0.0
+
 # Tavily Python SDK for advanced search capabilities
 tavily-python>=0.7.0
 
@@ -9,3 +12,8 @@ aiohttp>=3.9.0
 
 # Type hints
 typing-extensions>=4.9.0
+
+# PDF generation and formatting
+weasyprint>=62.0
+jinja2>=3.1.0
+markdown2>=2.5.0
