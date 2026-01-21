@@ -101,6 +101,9 @@ Categorize flags based on the persona. What's red for a Pension Fund may be yell
 Generate a markdown brief with this structure. Do NOT include a title or "Prepared for" header - the PDF template adds these automatically.
 
 ```
+## Fund Overview
+Overview table (asset class, founding year, vintages, stage, sector, geography, performance)
+
 ## 1. Discussion Points for the 30-Minute Conversation
 - Red Flags (potential deal breakers for this LP persona)
 - Yellow Flags (concerns requiring clarification)
@@ -108,8 +111,8 @@ Generate a markdown brief with this structure. Do NOT include a title or "Prepar
 - Priority Questions to Ask (3-5 specific, evidence-based questions)
 
 ## 2. Fund Strategy & Competitive Edge
-Overview table (asset class, founding year, vintages, stage, sector, geography, performance)
 Thesis and differentiation, deal sourcing, value-add approach
+Competitive positioning vs peer funds, fund economics (fees, carry, fund size), deployment pace
 
 ## 3. Team Background & Experience
 For each key partner: career history, personal track record, reputation, thought leadership, network
