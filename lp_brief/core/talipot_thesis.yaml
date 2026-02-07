@@ -1,0 +1,114 @@
+version: "2025-07-29"
+thesis:
+  fund: >
+    Talipot Holdings — a global alternative investment firm and family office
+    investing across venture capital, private equity, real estate, private debt,
+    and liquid markets. We operate as a single-family office and investment holding
+    group that allocates capital globally, participating as LP, direct investor,
+    and incubator of GP strategies (like 1200VC). We bridge innovative technology
+    companies with long-term value creation opportunities across Latin America,
+    the United States, and global markets.
+
+  mandate_buyer: >
+    Global adopters across the Americas, United States, Latin America, and UK
+    markets. Prioritize innovative, scalable technology companies in high-growth
+    sectors with strong founding teams and vision aligned with long-term value
+    creation. Focus on companies with potential regional fits in Latin America
+    and US markets, particularly those addressing logistics, e-commerce, enterprise
+    software, and emerging technologies.
+
+  stages_preferred:
+    - Series A
+    - Series B
+  stages_considered:
+    - Seed
+    - Early Stage
+    - Later Stage (case-by-case)
+
+  focus_areas:
+    Logistics & Transportation:
+      - Urban delivery platforms and last-mile logistics
+      - Supply-chain optimization and routing intelligence
+      - Transportation technology and mobility solutions
+      - Cross-border logistics and fulfillment
+
+    E-Commerce & Consumer:
+      - Consumer technology platforms
+      - E-commerce infrastructure and marketplaces
+      - Consumer-facing applications and services
+      - Digital commerce enablement
+
+    Information Technology & AI/Big Data:
+      - Artificial intelligence and machine learning applications
+      - Big data analytics and processing platforms
+      - Enterprise AI solutions and automation
+      - Data infrastructure and management systems
+
+    SaaS/Enterprise Software:
+      - Enterprise software and B2B platforms
+      - Software-as-a-Service solutions
+      - Business process automation
+      - Enterprise productivity and collaboration tools
+
+    Emerging Technologies:
+      - FinTech and financial technology solutions
+      - Climate tech and impact investing
+      - Health technology and digital health
+      - Robotics and automation
+      - Transformative technologies with ESG/impact lens
+
+  adoption_enablement:  # Value creation and support
+    - Strategic capital and long-term backing as a family office
+    - Global network access across Latin America, US, and international markets
+    - Follow-on financing support via co-investments or partnerships
+    - Operational insights via leadership network and sister strategies
+    - VC incubation capabilities (e.g., 1200VC) with focus on diversity and impact
+    - Cross-regional market access and expansion support
+
+  positive_signals:
+    - Innovative, scalable technology companies with high-growth potential
+    - Strong founding teams and vision aligned with long-term value creation
+    - Potential regional fits in Latin America and US markets
+    - Companies in high-growth sectors: AI, FinTech, BioTech, logistics, e-commerce
+    - Clear path to scalability and market leadership
+    - Alignment with ESG/impact investing principles
+    - Transformative technologies addressing significant market opportunities
+
+  negative_signals:
+    - Companies without clear scalability or technology differentiation
+    - Weak founding teams or unclear vision
+    - Limited regional fit or market opportunity
+    - Misalignment with long-term value creation principles
+    - Lack of innovation or competitive advantage
+
+  keywords_to_favor:
+    - venture capital
+    - family office
+    - global investing
+    - alternative assets
+    - technology
+    - artificial intelligence
+    - AI
+    - VC incubation
+    - impact investing
+    - growth
+    - cross-regional
+    - sustainability
+    - logistics
+    - transportation
+    - e-commerce
+    - consumer technology
+    - SaaS
+    - enterprise software
+    - FinTech
+    - BioTech
+    - climate tech
+    - health technology
+    - robotics
+    - big data
+    - scalable technology
+    - high-growth
+    - Latin America
+    - LatAm
+    - transformative technologies
+    - ESG

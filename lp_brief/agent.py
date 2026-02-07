@@ -24,7 +24,7 @@ from lp_brief.tools import TAVILY_TOOLS, format_brief_to_pdf
 
 def _load_lp_thesis() -> str:
     """Load the LP's investment thesis from thesis.yaml and format for injection."""
-    thesis_path = Path(__file__).parent / "core" / "thesis.yaml"
+    thesis_path = Path(__file__).parent / "core" / "sentinel_thesis.yaml"
     if not thesis_path.exists():
         return ""
     

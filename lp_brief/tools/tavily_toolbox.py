@@ -589,7 +589,7 @@ def _get_toolbox() -> TavilyToolbox:
 async def tavily_web_search(
     query: str,
     depth: str = "advanced",
-    max_results: int = 5,
+    max_results: int = 1,
 ) -> str:
     """
     Search the web for current information and news.
