@@ -36,52 +36,38 @@
             padding: 0;
         }
 
-        /* Header image */
-        .header-image {
-            width: 100%;
+        /* Memo header */
+        .memo-header {
             margin-bottom: 24pt;
+            padding-bottom: 12pt;
+            border-bottom: 2pt solid #2b5845;
         }
 
-        .header-image img {
-            width: 100%;
-            height: auto;
-        }
-
-        /* Title block */
-        .title-block {
-            margin-bottom: 24pt;
-        }
-
-        .memo-type {
-            font-size: 20pt;
+        .memo-title {
+            font-size: 24pt;
             color: #2b5845;
-            font-weight: 400;
+            font-weight: 600;
             margin: 0 0 8pt 0;
+            font-family: 'Inter', sans-serif;
         }
 
-        .fund-name {
-            font-size: 32pt;
+        /* Section headers - clean styling for memos (no background box) */
+        h2 {
+            font-size: 16pt;
             color: #2b5845;
-            font-weight: 400;
-            margin: 0 0 16pt 0;
+            font-weight: 600;
+            margin: 16pt 0 8pt 0;
+            padding-left: 0;
+            font-family: 'Inter', sans-serif;
         }
 
-        .metadata {
-            text-align: right;
-            font-size: 12pt;
-            color: #1f1f1f;
-        }
-
-        .metadata p {
-            margin: 0;
-        }
-
-        /* Section headers - tan background with green text */
+        /* Legacy section-header styling for briefs (kept for compatibility) */
         .section-header {
             background-color: #f6efd8;
             border: 1pt solid #000000;
             padding: 5pt;
             margin: 24pt 0 12pt 0;
+            page-break-inside: avoid;
         }
 
         .section-header h2 {
@@ -89,6 +75,7 @@
             color: #2b5845;
             font-weight: 400;
             margin: 0;
+            padding-left: 0;
             font-family: 'Inter', sans-serif;
         }
 
@@ -248,26 +235,13 @@
     </style>
 </head>
 <body>
-    <!-- Header with Sago logo -->
-    <div class="header-image">
-        <img src="{{ logo_path }}" alt="Sago">
+    <!-- Memo header with entity name -->
+    {% if display_title %}
+    <div class="memo-header">
+        <h1 class="memo-title">{{ display_title }}</h1>
     </div>
-
-    <!-- Title block -->
-    <div class="title-block">
-        <h1 class="fund-name">Brief: {{ entity_name }}</h1>
-        <div class="metadata">
-            <p>Prepared for: {{ prepared_for }}</p>
-            <p>Date: {{ date }}</p>
-            {% if tokens_used %}
-            <p>Tokens Used: {{ tokens_used }}</p>
-            {% endif %}
-            {% if generation_time %}
-            <p>Generation Time: {{ generation_time }}</p>
-            {% endif %}
-        </div>
-    </div>
-
+    {% endif %}
+    
     <!-- Main content from markdown conversion -->
     {{ content | safe }}
 </body>

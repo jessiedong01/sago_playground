@@ -20,3 +20,6 @@ markdown2>=2.5.0
 
 # YAML parsing for thesis configuration
 pyyaml>=6.0
+
+# PDF text extraction
+PyPDF2>=3.0.0
