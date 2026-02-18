@@ -20,7 +20,7 @@ from google.adk.planners import BuiltInPlanner
 from google.genai import types
 
 from brief.core import instructions
-from brief.tools import TAVILY_TOOLS, format_brief_to_pdf
+from brief.tools import TAVILY_TOOLS, format_brief_to_pdf, search_dealflow
 from brief.tools.pdf_reader import extract_pdf_text
 from brief.tools.pdf_formatter import format_memo_to_pdf
 
@@ -51,7 +51,7 @@ def collect_usage_callback(callback_context, llm_response):
 
 def _load_investment_thesis() -> str:
     """Load the investment thesis from thesis.yaml and format for injection."""
-    thesis_path = Path(__file__).parent / "core/thesis" / "sentinel_thesis.yaml"
+    thesis_path = Path(__file__).parent / "core/thesis" / "talipot_thesis.yaml"
     if not thesis_path.exists():
         return ""
     
@@ -83,7 +83,7 @@ fund_agent = LlmAgent(
     name="fund_briefing_agent",
     model="gemini-3-pro-preview",
     instruction=fund_full_instruction,
-    tools=TAVILY_TOOLS + [format_brief_to_pdf],
+    tools=TAVILY_TOOLS + [format_brief_to_pdf, search_dealflow],
     description="Fund briefing agent that researches VC funds and synthesizes findings into branded PDF reports",
     after_model_callback=collect_usage_callback
 )
@@ -92,7 +92,7 @@ company_agent = LlmAgent(
     name="company_briefing_agent",
     model="gemini-3-pro-preview",
     instruction=company_full_instruction,
-    tools=TAVILY_TOOLS + [format_brief_to_pdf],
+    tools=TAVILY_TOOLS + [format_brief_to_pdf, search_dealflow],
     description="Company briefing agent that researches companies and synthesizes findings into branded PDF reports",
     after_model_callback=collect_usage_callback
 )

@@ -16,6 +16,7 @@ Your workflow is: RESEARCH → SYNTHESIZE → GENERATE PDF. You must complete al
 | `tavily_extract_content` | Parsing specific URLs you've already found |
 | `tavily_map_site` | Discovering structure of a fund's website |
 | `tavily_crawl_site` | Systematic extraction from fund websites (team, portfolio) |
+| `search_dealflow` | Search internal dealflow database for non-public insights about funds, portfolio companies, or teams |
 | `format_brief_to_pdf` | Generate the final branded PDF report |
 
 ## Research Phase
@@ -37,6 +38,7 @@ For each key partner/principal:
 #### 3. Portfolio Intelligence
 - Crawl fund website for complete portfolio list with founders (authoritative source)
 - Cross-reference partner profile deals against official portfolio
+- Use `search_dealflow` to find internal insights about portfolio companies, deal terms, or relationships not publicly disclosed
 - For notable deals: entry valuation, current status, exit outcomes, MOIC
 - Identify struggling companies, not just winners
 - Founder names are essential for reference calls
@@ -186,6 +188,7 @@ Your workflow is: RESEARCH → SYNTHESIZE → GENERATE PDF. Complete all three p
 | `tavily_extract_content` | Parsing specific URLs like company blogs, news articles, or LinkedIn |
 | `tavily_map_site` | Discovering the architecture of the company’s product or resource pages |
 | `tavily_crawl_site` | Extracting team lists, product features, and integration partners |
+| `search_dealflow` | Search internal dealflow database for non-public insights about companies, investors, or teams |
 | `format_brief_to_pdf` | Generate the final branded PDF report |
 
 ## Research Phase
@@ -222,6 +225,7 @@ For each key management member found:
 
 #### 4. Investors & Board
 - Current investors: fund names, lead investors, investment dates, check sizes, key partners, portfolio fit, social media mentions, investment frequency.
+- Use `search_dealflow` to find internal insights about investors, deal terms, or relationships not publicly disclosed.
 
 **CRITICAL: Board Seat Verification**
 - Cross-reference board seats from multiple sources: LinkedIn profiles, SEC filings, company website, press releases, news articles
