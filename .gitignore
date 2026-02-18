@@ -1,0 +1,29 @@
+# Google OAuth credentials — never commit these
+sago_cal/credentials.json
+sago_cal/token.json
+
+# Brief .env (API keys)
+brief/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+
+# ADK session data
+.adk/
+
+# Generated PDF output
+output/*.pdf
+brief/output/*.pdf
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
