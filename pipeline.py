@@ -11,13 +11,17 @@ End-to-end automation:
   5. Print a delivery summary (email sending can be wired in below)
 
 Usage:
-  python pipeline.py           # live calendar scan
-  python pipeline.py --demo    # demo mode (no Google auth needed)
+  python pipeline.py                    # single run: scan once, process, exit
+  python pipeline.py --watch             # continuous: scan every N min, process new meetings only
+  python pipeline.py --watch --interval 300   # scan every 300 seconds (default: 300)
+  python pipeline.py --demo              # single run with fake calendar data
+  python pipeline.py --demo --watch      # continuous + demo data (new meetings simulated once)
 """
 
 import sys
 import asyncio
 import re
+import argparse
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -123,10 +127,10 @@ async def run_brief_for_meeting(meeting_data, external_participants, talipot_par
 
 
 async def process_meetings(meetings):
-    """Process all detected meetings through the Brief pipeline."""
+    """Process meetings through the Brief pipeline. Returns set of event_ids that were processed."""
+    processed_ids = set()
     if not meetings:
-        print("No meetings to process.")
-        return
+        return processed_ids
 
     for meeting in meetings:
         talipot, external = get_external_participants(meeting)
@@ -150,6 +154,7 @@ async def process_meetings(meetings):
 
         try:
             target, response = await run_brief_for_meeting(meeting, external, talipot)
+            processed_ids.add(meeting["event_id"])
 
             print(f"\n  Brief generated for: {target}")
             print(f"  To be sent to:")
@@ -180,6 +185,37 @@ async def process_meetings(meetings):
     print(f"\n{'='*60}")
     print("  Pipeline complete.")
     print(f"{'='*60}\n")
+    return processed_ids
+
+
+# ---------------------------------------------------------------------------
+# Watch loop: scan periodically, process only new meetings
+# ---------------------------------------------------------------------------
+
+async def run_watch(demo: bool, interval_seconds: int):
+    """Continuously scan for meetings and run the brief for any that haven't been processed yet."""
+    processed_ids = set()
+    service = None if demo else get_calendar_service()
+
+    print(f"  Watch mode: scanning every {interval_seconds}s. Ctrl+C to stop.\n")
+
+    while True:
+        if demo:
+            meetings = run_calendar_demo()
+        else:
+            meetings = scan_upcoming_meetings(service)
+
+        new_meetings = [m for m in meetings if m["event_id"] not in processed_ids]
+        if new_meetings:
+            print(f"  Found {len(new_meetings)} new meeting(s) to process.")
+            processed_ids |= await process_meetings(new_meetings)
+        else:
+            if meetings:
+                print(f"  No new meetings (all {len(meetings)} already processed). Next scan in {interval_seconds}s.")
+            else:
+                print("  No meetings found. Next scan in {}s.".format(interval_seconds))
+
+        await asyncio.sleep(interval_seconds)
 
 
 # ---------------------------------------------------------------------------
@@ -187,17 +223,25 @@ async def process_meetings(meetings):
 # ---------------------------------------------------------------------------
 
 def main():
+    parser = argparse.ArgumentParser(description="Sago Brief Pipeline")
+    parser.add_argument("--demo", action="store_true", help="Use fake calendar data (no Google auth)")
+    parser.add_argument("--watch", action="store_true", help="Run continuously; scan for new meetings every --interval seconds")
+    parser.add_argument("--interval", type=int, default=300, metavar="SECS", help="Seconds between calendar scans in watch mode (default: 300)")
+    args = parser.parse_args()
+
     print()
     print("  Sago Brief Pipeline")
     print("  ===================\n")
 
-    if "--demo" in sys.argv:
-        meetings = run_calendar_demo()
+    if args.watch:
+        asyncio.run(run_watch(demo=args.demo, interval_seconds=args.interval))
     else:
-        service = get_calendar_service()
-        meetings = scan_upcoming_meetings(service)
-
-    asyncio.run(process_meetings(meetings))
+        if args.demo:
+            meetings = run_calendar_demo()
+        else:
+            service = get_calendar_service()
+            meetings = scan_upcoming_meetings(service)
+        asyncio.run(process_meetings(meetings))
 
 
 if __name__ == "__main__":
