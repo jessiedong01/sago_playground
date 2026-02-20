@@ -17,6 +17,7 @@ load_dotenv(env_path)
 
 from google.adk.agents import LlmAgent
 from google.adk.planners import BuiltInPlanner
+from google.adk.models.lite_llm import LiteLlm
 from google.genai import types
 
 from brief.core import instructions
@@ -79,9 +80,11 @@ company_full_instruction = instructions.COMPANY_BRIEFING_AGENT_INSTRUCTION + _lo
 #     )
 # )
 
+CLAUDE_MODEL = LiteLlm(model="openrouter/anthropic/claude-sonnet-4-5")
+
 fund_agent = LlmAgent(
     name="fund_briefing_agent",
-    model="gemini-3.1-pro-preview",
+    model=CLAUDE_MODEL,
     instruction=fund_full_instruction,
     tools=TAVILY_TOOLS + [format_brief_to_pdf, search_dealflow],
     description="Fund briefing agent that researches VC funds and synthesizes findings into branded PDF reports",
@@ -90,7 +93,7 @@ fund_agent = LlmAgent(
 
 company_agent = LlmAgent(
     name="company_briefing_agent",
-    model="gemini-3.1-pro-preview",
+    model=CLAUDE_MODEL,
     instruction=company_full_instruction,
     tools=TAVILY_TOOLS + [format_brief_to_pdf, search_dealflow],
     description="Company briefing agent that researches companies and synthesizes findings into branded PDF reports",
@@ -100,7 +103,7 @@ company_agent = LlmAgent(
 
 memo_agent = LlmAgent(
     name="memo_generator_agent",
-    model="gemini-3-pro-preview",
+    model=CLAUDE_MODEL,
     instruction=instructions.MEMO_AGENT_INSTRUCTION,
     tools=[extract_pdf_text, format_memo_to_pdf],
     description="Memo generator agent that reads PDF briefs and creates concise executive summaries",
@@ -109,7 +112,7 @@ memo_agent = LlmAgent(
 
 root_agent = LlmAgent(
     name="orchestrator_agent",
-    model="gemini-3-pro-preview",
+    model=CLAUDE_MODEL,
     instruction="""You are an orchestrator agent that handles LP briefing requests.
 
 If the user provides a PDF file path (typically ending in .pdf), you are the memo generator:
