@@ -35,7 +35,7 @@ from sago_cal import (
 # ---------------------------------------------------------------------------
 # Email delivery
 # ---------------------------------------------------------------------------
-from email_utils import send_brief_to_guests, send_confirmation_to_organizer
+from email_utils import send_brief_to_guests, send_delivery_confirmation
 
 # ---------------------------------------------------------------------------
 # Brief agent
@@ -185,13 +185,10 @@ async def process_meetings(meetings):
                 target=target,
             )
 
-            if organizer:
-                send_confirmation_to_organizer(
-                    organizer_email=organizer,
-                    recipients=recipients,
-                    meeting_title=meeting["summary"],
-                    target=target,
-                )
+            send_delivery_confirmation(
+                meeting_title=meeting["summary"],
+                target=target,
+            )
 
             if response:
                 print(f"\n  Agent summary:\n  {response[:300]}...")

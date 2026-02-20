@@ -66,24 +66,19 @@ Sago
         print(f"  Brief sent to: {person['email']}")
 
 
-def send_confirmation_to_organizer(organizer_email: str, recipients: list, meeting_title: str, target: str):
-    """Send a confirmation email to the meeting organizer."""
+def send_delivery_confirmation(meeting_title: str, target: str):
+    """Send a quick confirmation to jessie@heysago.com that the brief was delivered."""
     service = _get_gmail_service()
 
-    recipient_list = "\n".join(f"  - {p['email']}" for p in recipients)
-
     msg = MIMEMultipart()
-    msg["To"] = organizer_email
-    msg["Subject"] = f"Sago Brief Delivered: {target}"
-    body = f"""Hi,
+    msg["To"] = "jessie@heysago.com"
+    msg["Subject"] = f"Brief sent: {target}"
+    body = f"""Hi Jessie,
 
-A Sago brief for "{target}" has been generated and sent to the following attendees of "{meeting_title}":
+Just confirming — the Sago brief for "{meeting_title}" has been sent to you and all @talipot.com recipients.
 
-{recipient_list}
-
-Best,
 Sago
 """
     msg.attach(MIMEText(body, "plain"))
     _send_message(service, msg)
-    print(f"  Confirmation sent to organizer: {organizer_email}")
+    print(f"  Delivery confirmation sent to jessie@heysago.com")
