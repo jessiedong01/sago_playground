@@ -112,6 +112,40 @@ def find_latest_pdf() -> str:
     return str(pdfs[0])
 
 
+# Hardcoded brief recipients — always receive the brief regardless of invite
+HARDCODED_RECIPIENTS = [
+    {"email": "jessie@heysago.com", "name": "Jessie"},
+]
+RECIPIENT_DOMAINS = ["talipot.com"]
+
+
+def get_brief_recipients(meeting_participants):
+    """
+    Returns the list of people who should receive the brief:
+    - Always: hardcoded recipients (jessie@heysago.com)
+    - Also: any @talipot.com attendees on the invite
+    External participants (everyone else) are research context only.
+    """
+    recipients = list(HARDCODED_RECIPIENTS)
+    seen = {r["email"].lower() for r in recipients}
+    for p in meeting_participants:
+        domain = p["email"].split("@")[-1].lower()
+        if domain in RECIPIENT_DOMAINS and p["email"].lower() not in seen:
+            recipients.append(p)
+            seen.add(p["email"].lower())
+    return recipients
+
+
+def get_external_context(meeting_participants):
+    """Returns participants who are external (not recipients) — used as brief context."""
+    recipient_emails = {r["email"].lower() for r in HARDCODED_RECIPIENTS}
+    return [
+        p for p in meeting_participants
+        if p["email"].split("@")[-1].lower() not in RECIPIENT_DOMAINS
+        and p["email"].lower() not in recipient_emails
+    ]
+
+
 async def process_meetings(meetings):
     """Process meetings through the Brief pipeline. Returns set of event_ids that were processed."""
     processed_ids = set()
@@ -120,19 +154,21 @@ async def process_meetings(meetings):
 
     for meeting in meetings:
         all_participants = meeting.get("participants", [])
-
-        if not all_participants:
-            print(f"  Skipping '{meeting['summary']}' — no participants found.")
-            continue
-
         organizer = meeting.get("organizer", "")
+
+        recipients = get_brief_recipients(all_participants)
+        external = get_external_context(all_participants)
 
         print(f"\n{'='*60}")
         print(f"  Processing: {meeting['summary']}")
         print(f"  Organizer: {organizer}")
         print(f"  Brief recipients:")
-        for p in all_participants:
+        for p in recipients:
             print(f"    -> {p['email']}")
+        if external:
+            print(f"  External participants (context only):")
+            for p in external:
+                print(f"    -> {p['email']}")
 
         try:
             target, response = await run_brief_for_meeting(meeting, all_participants)
@@ -144,7 +180,7 @@ async def process_meetings(meetings):
 
             send_brief_to_guests(
                 pdf_path=pdf_path,
-                recipients=all_participants,
+                recipients=recipients,
                 meeting_title=meeting["summary"],
                 target=target,
             )
@@ -152,7 +188,7 @@ async def process_meetings(meetings):
             if organizer:
                 send_confirmation_to_organizer(
                     organizer_email=organizer,
-                    recipients=all_participants,
+                    recipients=recipients,
                     meeting_title=meeting["summary"],
                     target=target,
                 )
