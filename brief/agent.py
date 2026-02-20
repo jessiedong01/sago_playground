@@ -81,7 +81,7 @@ company_full_instruction = instructions.COMPANY_BRIEFING_AGENT_INSTRUCTION + _lo
 
 fund_agent = LlmAgent(
     name="fund_briefing_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3.1-pro-preview",
     instruction=fund_full_instruction,
     tools=TAVILY_TOOLS + [format_brief_to_pdf, search_dealflow],
     description="Fund briefing agent that researches VC funds and synthesizes findings into branded PDF reports",
@@ -90,7 +90,7 @@ fund_agent = LlmAgent(
 
 company_agent = LlmAgent(
     name="company_briefing_agent",
-    model="gemini-3-pro-preview",
+    model="gemini-3.1-pro-preview",
     instruction=company_full_instruction,
     tools=TAVILY_TOOLS + [format_brief_to_pdf, search_dealflow],
     description="Company briefing agent that researches companies and synthesizes findings into branded PDF reports",
