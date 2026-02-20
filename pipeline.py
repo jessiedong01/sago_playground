@@ -3,12 +3,10 @@ Sago Brief Pipeline
 
 End-to-end automation:
   1. Scan Google Calendar for meetings that include hello@heysago.com
-  2. For each meeting, identify:
-       - Talipot participants  (@talipot.com)  — the brief recipients
-       - External participants (everyone else) — the entities to research
-  3. Derive the fund/company name to research from the external participants
+  2. For each meeting, all guests receive the brief
+  3. Derive the fund/company name to research from the meeting title or attendees
   4. Run the Brief agent to generate a PDF research report
-  5. Print a delivery summary (email sending can be wired in below)
+  5. Email the brief to all guests and send a confirmation to the organizer
 
 Usage:
   python pipeline.py                    # single run: scan once, process, exit
@@ -33,6 +31,11 @@ from sago_cal import (
     get_external_participants,
     run_demo as run_calendar_demo,
 )
+
+# ---------------------------------------------------------------------------
+# Email delivery
+# ---------------------------------------------------------------------------
+from email_utils import send_brief_to_guests, send_confirmation_to_organizer
 
 # ---------------------------------------------------------------------------
 # Brief agent
@@ -78,21 +81,21 @@ def derive_research_target(meeting_data, external_participants):
     return title  # last resort: use full title
 
 
-async def run_brief_for_meeting(meeting_data, external_participants, talipot_participants):
+async def run_brief_for_meeting(meeting_data, all_participants):
     """Invoke the Brief agent for a single meeting and return the output."""
-    target = derive_research_target(meeting_data, external_participants)
+    target = derive_research_target(meeting_data, all_participants)
     meeting_title = meeting_data["summary"]
     meeting_start = meeting_data["start"]
 
     # Build the prompt for the orchestrator
-    external_names = ", ".join(
-        p["name"] or p["email"] for p in external_participants
+    attendee_names = ", ".join(
+        p["name"] or p["email"] for p in all_participants
     )
     prompt = (
         f"Generate a briefing for: {target}\n\n"
         f"Context: Upcoming meeting — '{meeting_title}' on {meeting_start}.\n"
-        f"External attendees: {external_names}.\n"
-        f"Prepared for: Talipot Investment Team"
+        f"Attendees: {attendee_names}.\n"
+        f"Prepared for: Investment Team"
     )
 
     print(f"\n  Researching: {target}")
@@ -126,6 +129,15 @@ async def run_brief_for_meeting(meeting_data, external_participants, talipot_par
     return target, final_response
 
 
+def find_latest_pdf() -> str:
+    """Return the path to the most recently generated brief PDF."""
+    output_dir = Path(__file__).parent / "brief" / "output"
+    pdfs = sorted(output_dir.glob("*.pdf"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if not pdfs:
+        raise FileNotFoundError("No PDF found in brief/output/")
+    return str(pdfs[0])
+
+
 async def process_meetings(meetings):
     """Process meetings through the Brief pipeline. Returns set of event_ids that were processed."""
     processed_ids = set()
@@ -133,48 +145,43 @@ async def process_meetings(meetings):
         return processed_ids
 
     for meeting in meetings:
-        talipot, external = get_external_participants(meeting)
+        all_participants = meeting.get("participants", [])
 
-        if not talipot:
-            print(f"  Skipping '{meeting['summary']}' — no talipot.com participants.")
+        if not all_participants:
+            print(f"  Skipping '{meeting['summary']}' — no participants found.")
             continue
 
-        if not external:
-            print(f"  Skipping '{meeting['summary']}' — no external participants to research.")
-            continue
+        organizer = meeting.get("organizer", "")
 
         print(f"\n{'='*60}")
         print(f"  Processing: {meeting['summary']}")
-        print(f"  Brief recipients (talipot.com):")
-        for p in talipot:
-            print(f"    -> {p['email']}")
-        print(f"  Research targets (external):")
-        for p in external:
+        print(f"  Organizer: {organizer}")
+        print(f"  Brief recipients:")
+        for p in all_participants:
             print(f"    -> {p['email']}")
 
         try:
-            target, response = await run_brief_for_meeting(meeting, external, talipot)
+            target, response = await run_brief_for_meeting(meeting, all_participants)
             processed_ids.add(meeting["event_id"])
 
             print(f"\n  Brief generated for: {target}")
-            print(f"  To be sent to:")
-            for p in talipot:
-                print(f"    -> {p['email']} ({p['name'] or 'no name'})")
 
-            # ----------------------------------------------------------------
-            # Email delivery hook
-            # Uncomment and configure to actually send the PDF via email.
-            # ----------------------------------------------------------------
-            # from email_utils import send_brief_email
-            # pdf_path = find_latest_pdf()   # Brief agent saves PDF to disk
-            # for p in talipot:
-            #     send_brief_email(
-            #         to=p["email"],
-            #         name=p["name"],
-            #         meeting_title=meeting["summary"],
-            #         pdf_path=pdf_path,
-            #     )
-            # ----------------------------------------------------------------
+            pdf_path = find_latest_pdf()
+
+            send_brief_to_guests(
+                pdf_path=pdf_path,
+                recipients=all_participants,
+                meeting_title=meeting["summary"],
+                target=target,
+            )
+
+            if organizer:
+                send_confirmation_to_organizer(
+                    organizer_email=organizer,
+                    recipients=all_participants,
+                    meeting_title=meeting["summary"],
+                    target=target,
+                )
 
             if response:
                 print(f"\n  Agent summary:\n  {response[:300]}...")
