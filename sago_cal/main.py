@@ -97,7 +97,8 @@ def print_meeting(meeting_data):
     if meeting_data.get("html_link"):
         print(f"  Link:      {meeting_data['html_link']}")
     print(f"\n  Brief subject: {meeting_data['summary']}")
-    print(f"\n  Brief recipients:")
+    print(f"\n  Brief recipients: jessie@heysago.com + talipot.com")
+    print(f"\n  External participants (context only):")
     for p in participants:
         name = f" ({p['name']})" if p["name"] else ""
         print(f"    -> {p['email']}{name}")
