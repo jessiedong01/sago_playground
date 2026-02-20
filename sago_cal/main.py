@@ -87,7 +87,7 @@ def get_external_participants(meeting_data):
 
 def print_meeting(meeting_data):
     """Pretty-print a detected meeting."""
-    talipot, external = get_external_participants(meeting_data)
+    participants = meeting_data.get("participants", [])
     print(f"\n{'='*60}")
     print(f"  SAGO MEETING DETECTED")
     print(f"{'='*60}")
@@ -96,15 +96,12 @@ def print_meeting(meeting_data):
     print(f"  Organizer: {meeting_data['organizer']}")
     if meeting_data.get("html_link"):
         print(f"  Link:      {meeting_data['html_link']}")
-    print(f"\n  Talipot participants (brief recipients):")
-    for p in talipot:
+    print(f"\n  Brief subject: {meeting_data['summary']}")
+    print(f"\n  Brief recipients:")
+    for p in participants:
         name = f" ({p['name']})" if p["name"] else ""
         print(f"    -> {p['email']}{name}")
-    print(f"\n  External participants (brief subjects):")
-    for p in external:
-        name = f" ({p['name']})" if p["name"] else ""
-        print(f"    -> {p['email']}{name}")
-    print(f"\n  --> Triggering Brief for {len(external)} external participant(s)...")
+    print(f"\n  --> Generating brief for: {meeting_data['summary']}")
     print(f"{'='*60}\n")
 
 

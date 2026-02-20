@@ -50,35 +50,9 @@ from brief.agent import root_agent
 # Helpers
 # ---------------------------------------------------------------------------
 
-def derive_research_target(meeting_data, external_participants):
-    """
-    Best-effort extraction of a fund/company name to pass to the Brief agent.
-
-    Priority:
-      1. Meeting title (e.g. "Talipot x Sequoia — Q1 Review" → "Sequoia")
-      2. External participant email domain (e.g. sequoiacap.com → "Sequoia Capital")
-    """
-    title = meeting_data.get("summary", "")
-
-    # Try to extract after common separators in meeting titles
-    for sep in [" x ", " <> ", " — ", " - ", " with ", " : "]:
-        parts = title.split(sep)
-        if len(parts) >= 2:
-            # Return the part that isn't obviously Talipot or Sago
-            for part in parts:
-                clean = part.strip().split("—")[0].split("-")[0].strip()
-                low = clean.lower()
-                if "talipot" not in low and "sago" not in low and len(clean) > 2:
-                    return clean
-
-    # Fall back to the first external participant's email domain
-    if external_participants:
-        domain = external_participants[0]["email"].split("@")[-1]
-        # Strip TLD and capitalise: sequoiacap.com → Sequoiacap
-        name = domain.split(".")[0].capitalize()
-        return name
-
-    return title  # last resort: use full title
+def derive_research_target(meeting_data, all_participants):
+    """Use the meeting title as the research subject."""
+    return meeting_data.get("summary", "Meeting Brief")
 
 
 async def run_brief_for_meeting(meeting_data, all_participants):
